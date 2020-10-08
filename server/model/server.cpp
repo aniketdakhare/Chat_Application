@@ -19,7 +19,7 @@ int Server::getConnectionStatus()
 
 int Server::getConnectedUsersSocket()
 {
-    userSocket = accept(serverSocket, (struct sockaddr*) &sreverAddress, (socklen_t*) &addressLength);
+    int userSocket = accept(serverSocket, (struct sockaddr*) &sreverAddress, (socklen_t*) &addressLength);
 
     return userSocket;
 }

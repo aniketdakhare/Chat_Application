@@ -9,7 +9,7 @@ using namespace std;
 class Server
 { 
 
-    int serverSocket, userSocket;
+    int serverSocket;
 	struct sockaddr_in sreverAddress;
     int opt = 1;
     int addressLength = sizeof(sreverAddress);
