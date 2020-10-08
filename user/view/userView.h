@@ -4,7 +4,7 @@
 
 using namespace std;
 
-struct ServerView
+struct UserView
 {
     void displayConnectionStatus(int);
 };

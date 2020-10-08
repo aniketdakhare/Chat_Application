@@ -7,5 +7,5 @@ void ServerView::displayConnectionStatus(int connectionStatus)
     	perror("listen"); 
 		exit(EXIT_FAILURE);
     }
-    std::cout << "Server started.\nListening...." << std::endl;
+    cout << "Server started.\nListening...." << endl;
 }
