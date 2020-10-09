@@ -1,5 +1,15 @@
 #include "user.h"
 
+bool User::ckeckUserCredentials(string username, string password)
+{
+    string user = "dummy";
+    string pass = "1234";
+
+    if(username == user && password == pass)
+        return true;
+    return false;
+}
+
 int User::getConnectionStatus()
 {
     userSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);

@@ -23,9 +23,6 @@ class UserController
         }        
     }
 
-
-    public:
-    
     void startUser()
     {
         userView.displayConnectionStatus(user.getConnectionStatus());
@@ -37,10 +34,38 @@ class UserController
 	    send_thread.join();
 	    recv_thread.join();
     }
+
+    public:
+    void loginUser()
+    {
+        int choice = userView.getUserChoice();
+
+        switch(choice)
+        {
+            case 1:
+                {
+                    bool flag = true;
+                    while(flag)
+                    {
+                        string userName = userView.getUserName();
+                        string password = userView.getUserPassword();
+                        bool checkCredentials = user.ckeckUserCredentials(userName, password);
+                        if(checkCredentials)
+                            flag = false;
+                        else
+                            userView.displayWarning("Invalid Username or Password");
+                    }
+                    startUser();
+                }
+                break;
+            case 2:
+                exit(0);
+        }
+    }
 };
 
 int main()
 {
     UserController controller;
-    controller.startUser();
+    controller.loginUser();
 }

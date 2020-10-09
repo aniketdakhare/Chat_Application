@@ -15,11 +15,40 @@ void UserView::displayConnectionStatus(int connectionStatus)
 string UserView::writeMessage()
 {
 	string message;
-  	cin >> message;
+  	getline(cin, message);
   	return message;
 }
 
 void UserView::printMessage(string message)
 {
   	cout << "\x1B[33m" << "Server: " << message << "\033[0m" << endl;
+}
+
+int UserView::getUserChoice()
+{
+	int choice;
+	cout << "1: Login\n2: Exit\nEnter Your Choice: ";
+	cin >> choice;
+	return choice;
+}
+
+string UserView::getUserName()
+{
+	string userName;
+	cout << "\nEnter UserName: ";
+	getline(cin, userName);
+	return userName;
+}
+
+string UserView::getUserPassword()
+{
+	string password;
+	cout << "\nEnter Password: ";
+	getline(cin, password);
+	return password;
+}
+
+void UserView::displayWarning(string message)
+{
+	cout << "\x1B[31m" << message << "\033[0m" << endl;
 }

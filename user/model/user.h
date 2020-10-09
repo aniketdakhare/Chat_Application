@@ -15,6 +15,7 @@ class User
     struct sockaddr_in serverAddress;
 
     public:
+        bool ckeckUserCredentials(string, string);
         int getConnectionStatus();
         int getUserSocket();
         void sendMessage(string, int);
