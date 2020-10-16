@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <vector>
 #include "user.h"
+#include "../DBOperations/DBOperations.h"
 
 #define PORT 9090
 
@@ -19,6 +20,7 @@ class Server
 	pthread_t receiveThread;
 	char ip[INET_ADDRSTRLEN];
   
+    static DBOperations dbOperator;
     static int clients[1];
 	static char message[500];
     static int numberOfConnectedClients;

@@ -5,6 +5,7 @@ int Server::clients[1];
 char Server::message[500];
 pthread_mutex_t  Server::mutex = PTHREAD_MUTEX_INITIALIZER;
 vector<ClientInfo> Server::connectedClients;
+DBOperations Server::dbOperator;
 
 void Server::sendMessage(char *message, int socket)
 {
@@ -135,7 +136,7 @@ void Server::loginUser(ClientInfo& client)
 			continue;
 		}
 
-		bool isUserLoggedIn = true;
+		bool isUserLoggedIn = dbOperator.checkExists(userId, password);
 		
 		if(isUserLoggedIn)
 		{
