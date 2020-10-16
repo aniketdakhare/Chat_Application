@@ -7,7 +7,7 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 
-#define PORT 8888
+#define PORT 9090
 
 using namespace std;
 
@@ -19,6 +19,7 @@ class Client
 	struct sockaddr_in receiverAddress;
 	static char message[500];
 
+	void login();
     void sendMessage();
     static void* receiveMessage(void*);
 

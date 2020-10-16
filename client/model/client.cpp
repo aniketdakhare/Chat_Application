@@ -12,7 +12,9 @@ void Client::startUser()
 	receiverAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
 
     connect(mySocket, (struct sockaddr *)&receiverAddress, sizeof(receiverAddress));
-    printf("\nStatus: ONLINE\n");
+
+	login();
+    printf("\n\033[3;42;30mONLINE\033[0m\t\t\n");
 	sendMessage();
 }
 
@@ -46,4 +48,32 @@ void *Client::receiveMessage(void* socket)
 		cout << message;
 		memset(message, '\0', sizeof(message));
 	}
+}
+
+void Client::login()
+{
+	while(true)
+	{
+		memset(message, '\0', sizeof(message));
+		recv(mySocket, message, 500, 0);
+		if(message[0] == '1')
+		{
+			cout << "Login Successfully..." << endl;
+			break;
+		}
+		else if(message[0] == '2')
+		{
+			cout << "Invalid UserId or Password" << endl;
+			continue;
+		}
+		else if(message[0] == '3')
+		{
+			cout << "Given user is already logged in...!!!" << endl;
+			continue;
+		}
+		cout << message;
+		memset(message, '\0', sizeof(message));
+		cin >> message;
+		write(mySocket, message, strlen(message));
+	}	
 }
