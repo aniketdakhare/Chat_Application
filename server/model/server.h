@@ -8,7 +8,7 @@
 #include <vector>
 #include "user.h"
 
-#define PORT 8888
+#define PORT 9090
 
 using namespace std;
 
@@ -23,9 +23,11 @@ class Server
 	static char message[500];
     static int numberOfConnectedClients;
     static pthread_mutex_t mutex;
+    static vector<ClientInfo> connectedClients;
 
     static void sendMessage(char*, int);
     static void *receiveMessage(void *sock);
+    static void loginUser(ClientInfo&);
     static bool getConnectUserLoginStatus(string, string);
 
     void handleSession(int);
