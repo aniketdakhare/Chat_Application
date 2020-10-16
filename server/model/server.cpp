@@ -5,13 +5,13 @@ int Server::clients[1];
 char Server::message[500];
 pthread_mutex_t  Server::mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void Server::sendMessage(char *message, int curr)
+void Server::sendMessage(char *message, int socket)
 {
 	int i;
 	pthread_mutex_lock(&mutex);
 	for(i = 0; i < numberOfConnectedClients; i++) 
     {
-		if(clients[i] != curr)
+		if(clients[i] != socket)
         {
 			if(send(clients[i], message, strlen(message), 0) < 0) 
             {
@@ -28,28 +28,33 @@ void *Server::receiveMessage(void *sock)
 	struct ClientInfo client = *((struct ClientInfo *)sock);
 	char message[500];
 	int length;
-	int i;
-	int j;
 
-	while((length = recv(client.mySocket,message,500,0)) > 0) 
+	while((length = recv(client.mySocket, message, 500, 0)) > 0) 
 	{
 		message[length] = '\0';
 		sendMessage(message, client.mySocket);
-		memset(message,'\0',sizeof(message));
+		memset(message,'\0', sizeof(message));
 	}
+
 	pthread_mutex_lock(&mutex);
-	printf("%s disconnected\n",client.ip);
-	for(i = 0; i < numberOfConnectedClients; i++) {
-		if(clients[i] == client.mySocket) {
-			j = i;
-			while(j < numberOfConnectedClients-1) {
-				clients[j] = clients[j+1];
+	printf("%s disconnected\n", client.ip);
+	
+	for(int i = 0; i < numberOfConnectedClients; i++) 
+	{
+		if(clients[i] == client.mySocket) 
+		{
+			int j = i;
+			while(j < numberOfConnectedClients - 1) 
+			{
+				clients[j] = clients[j + 1];
 				j++;
 			}
 		}
 	}
+
 	numberOfConnectedClients--;
 	pthread_mutex_unlock(&mutex);
+	
 	return 0;
 }
 
@@ -66,23 +71,15 @@ void Server::startServer()
 	serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
 	clientAddressSize = sizeof(clientAddress);
 
-	if(bind(serverSocket,(struct sockaddr *)&serverAddress,sizeof(serverAddress)) != 0) {
-		perror("binding unsuccessful");
-		exit(1);
-	}
+	bind(serverSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
 
-	if(listen(serverSocket,1) != 0) {
-		perror("listening unsuccessful");
-		exit(1);
-	}
-
-	while(1) {
+	listen(serverSocket, 1);
+	
+	while(1) 
+	{
 		if(clientCounter < 2)
 		{
-			if((clientSocket = accept(serverSocket,(struct sockaddr *)&clientAddress,&clientAddressSize)) < 0) {
-				perror("accept unsuccessful");
-				exit(1);
-			}
+			clientSocket = accept(serverSocket,(struct sockaddr *)&clientAddress,&clientAddressSize);
 			handleSession(clientSocket);
 			clientCounter++;
 		}

@@ -24,7 +24,7 @@ class Server
     static int numberOfConnectedClients;
     static pthread_mutex_t mutex;
 
-    static void sendMessage(char*,int);
+    static void sendMessage(char*, int);
     static void *receiveMessage(void *sock);
     static bool getConnectUserLoginStatus(string, string);
 

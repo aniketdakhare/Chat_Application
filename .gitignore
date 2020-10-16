@@ -36,6 +36,6 @@ CMakeCache.txt
 CMakeFiles
 Makefile
 executableServer
-executableUser
+executableClient
 .gitignore
 .vscode

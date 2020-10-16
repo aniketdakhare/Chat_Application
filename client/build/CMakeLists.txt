@@ -8,8 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
-add_executable(executableUser ../controller/userController.cpp ../model/user.cpp ../view/userView.cpp)
+add_executable(executableClient ../controller/clientController.cpp ../model/client.cpp)
 
 find_package(Threads REQUIRED)
 
-target_link_libraries(executableUser PRIVATE Threads::Threads)
+target_link_libraries(executableClient PRIVATE Threads::Threads)
