@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
-add_executable(executableServer ../controller/serverController.cpp ../model/server.cpp ../view/serverView.cpp)
+add_executable(executableServer ../controller/serverController.cpp ../model/server.cpp)
 
 find_package(Threads REQUIRED)
 

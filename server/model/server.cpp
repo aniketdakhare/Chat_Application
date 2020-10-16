@@ -1,39 +1,103 @@
 #include "server.h"
 
-int Server::getConnectionStatus()
+int Server::numberOfConnectedClients = 0;
+int Server::clients[1];
+char Server::message[500];
+pthread_mutex_t  Server::mutex = PTHREAD_MUTEX_INITIALIZER;
+
+void Server::sendMessage(char *message, int curr)
 {
-    serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-    setsockopt(serverSocket, SOL_SOCKET, SO_REUSEPORT , &opt, sizeof(opt));
-
-    sreverAddress.sin_family = AF_INET;
-    sreverAddress.sin_port = htons(PORT);
-    sreverAddress.sin_addr.s_addr = INADDR_ANY;
-
-    bind(serverSocket, (struct sockaddr*) &sreverAddress, addressLength);
-
-    int usersCount = listen(serverSocket, 3) > 0;
-    
-    return usersCount;
+	int i;
+	pthread_mutex_lock(&mutex);
+	for(i = 0; i < numberOfConnectedClients; i++) 
+    {
+		if(clients[i] != curr)
+        {
+			if(send(clients[i], message, strlen(message), 0) < 0) 
+            {
+				perror("sending failure");
+				continue;
+			}
+		}
+	}
+	pthread_mutex_unlock(&mutex);	
 }
 
-int Server::getConnectedUsersSocket()
+void *Server::receiveMessage(void *sock)
 {
-    int userSocket = accept(serverSocket, (struct sockaddr*) &sreverAddress, (socklen_t*) &addressLength);
+	struct ClientInfo client = *((struct ClientInfo *)sock);
+	char message[500];
+	int length;
+	int i;
+	int j;
 
-    return userSocket;
+	while((length = recv(client.mySocket,message,500,0)) > 0) 
+	{
+		message[length] = '\0';
+		sendMessage(message, client.mySocket);
+		memset(message,'\0',sizeof(message));
+	}
+	pthread_mutex_lock(&mutex);
+	printf("%s disconnected\n",client.ip);
+	for(i = 0; i < numberOfConnectedClients; i++) {
+		if(clients[i] == client.mySocket) {
+			j = i;
+			while(j < numberOfConnectedClients-1) {
+				clients[j] = clients[j+1];
+				j++;
+			}
+		}
+	}
+	numberOfConnectedClients--;
+	pthread_mutex_unlock(&mutex);
+	return 0;
 }
 
-void Server::sendMessage(string message, int socket)
+void Server::startServer()
 {
-    memset(buffer, 0, sizeof(message));
-    strcpy(buffer, message.c_str());
-	send(socket, buffer, strlen(buffer), 0); 	
+	int clientSocket, serverSocket; 
+	int clientCounter = 0;
+	socklen_t clientAddressSize;
+
+	serverSocket = socket(AF_INET,SOCK_STREAM,0);
+	memset(serverAddress.sin_zero,'\0',sizeof(serverAddress.sin_zero));
+	serverAddress.sin_family = AF_INET;
+	serverAddress.sin_port = htons(PORT);
+	serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
+	clientAddressSize = sizeof(clientAddress);
+
+	if(bind(serverSocket,(struct sockaddr *)&serverAddress,sizeof(serverAddress)) != 0) {
+		perror("binding unsuccessful");
+		exit(1);
+	}
+
+	if(listen(serverSocket,1) != 0) {
+		perror("listening unsuccessful");
+		exit(1);
+	}
+
+	while(1) {
+		if(clientCounter < 2)
+		{
+			if((clientSocket = accept(serverSocket,(struct sockaddr *)&clientAddress,&clientAddressSize)) < 0) {
+				perror("accept unsuccessful");
+				exit(1);
+			}
+			handleSession(clientSocket);
+			clientCounter++;
+		}
+	}
 }
 
-string Server::receiveMessage(int socket)
+void Server::handleSession(int clientSocket)
 {
-    memset(buffer, 0, sizeof(buffer));
-    recv(socket, (char*)&buffer, sizeof(buffer), 0);
-    return buffer;
+	pthread_mutex_lock(&mutex);
+	inet_ntop(AF_INET, (struct sockaddr *)&clientAddress, ip, INET_ADDRSTRLEN);
+	printf("%s connected\n",ip);
+	client.mySocket = clientSocket;
+	strcpy(client.ip, ip);
+	clients[numberOfConnectedClients] = clientSocket;
+	numberOfConnectedClients++;
+	pthread_create(&receiveThread, NULL, receiveMessage, &client);
+	pthread_mutex_unlock(&mutex);
 }
