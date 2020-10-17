@@ -13,7 +13,7 @@ void Client::startUser()
 
     connect(mySocket, (struct sockaddr *)&receiverAddress, sizeof(receiverAddress));
 
-	login();
+	registerClient();
     printf("\n\033[3;42;30mONLINE\033[0m\t\t\n");
 	sendMessage();
 }
@@ -52,23 +52,27 @@ void *Client::receiveMessage(void* socket)
 
 void Client::login()
 {
+	system("clear");
+	cout << "\n\t\x1b[1m\x1B[93mLogin to CHAT_APP\033[0m\x1b[0m" << endl;
+
 	while(true)
 	{
 		memset(message, '\0', sizeof(message));
 		recv(mySocket, message, 500, 0);
 		if(message[0] == '1')
 		{
-			cout << "Login Successfully..." << endl;
+			system("clear");
+			cout << "\n\x1B[32mLogin Successfully...\033[0m" << endl;
 			break;
 		}
 		else if(message[0] == '2')
 		{
-			cout << "Invalid UserId or Password" << endl;
+			cout << "\n\x1B[31mInvalid UserId or Password\033[0m" << endl;
 			continue;
 		}
 		else if(message[0] == '3')
 		{
-			cout << "Given user is already logged in...!!!" << endl;
+			cout << "\n\x1B[31mGiven user is already logged in...!!!\033[0m" << endl;
 			continue;
 		}
 		cout << message;
@@ -76,4 +80,38 @@ void Client::login()
 		cin >> message;
 		write(mySocket, message, strlen(message));
 	}	
+}
+
+void Client::registerClient()
+{
+	memset(message, '\0', sizeof(message));
+	recv(mySocket, message, 500, 0);
+	cout << message;
+	memset(message, '\0', sizeof(message));
+	cin >> message;
+	write(mySocket, message, strlen(message));
+
+	switch (message[0])
+	{
+		case '1':
+			{
+				system("clear");
+				cout << "\n\t\x1b[1m\x1B[93mRegister to CHAT_APP\033[0m\x1b[0m" << endl;
+				for (int i = 0; i < 2; i++)
+				{
+					memset(message, '\0', sizeof(message));
+					recv(mySocket, message, 500, 0);
+					cout << message;
+					memset(message, '\0', sizeof(message));
+					cin >> message;
+					write(mySocket, message, strlen(message));
+				}
+
+				login();
+			}
+			break;
+		case '2':
+			login();
+			break;
+	}
 }

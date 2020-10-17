@@ -20,6 +20,7 @@ class Client
 	static char message[500];
 
 	void login();
+	void registerClient();
     void sendMessage();
     static void* receiveMessage(void*);
 
