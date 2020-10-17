@@ -29,10 +29,13 @@ class Server
 
     static void sendMessage(char*, int);
     static void *receiveMessage(void *sock);
-    static void loginUser(ClientInfo&);
-    static bool getConnectUserLoginStatus(string, string);
 
+    void loginUser(int, char*);
+    void displayClintConsole(int, char*);
+    void registerUser(int);
+    bool getConnectUserLoginStatus(string, string);
     void handleSession(int);
+    pair<string, string> getUserCredentials(int);
     
     public:
         void startServer();

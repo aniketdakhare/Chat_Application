@@ -46,6 +46,8 @@ void *Server::receiveMessage(void *sock)
 		if(clients[i] == client.mySocket) 
 		{
 			int j = i;
+			connectedClients.erase(connectedClients.begin() + i);
+
 			while(j < numberOfConnectedClients - 1) 
 			{
 				clients[j] = clients[j + 1];
@@ -93,67 +95,54 @@ void Server::handleSession(int clientSocket)
 	pthread_mutex_lock(&mutex);
 	inet_ntop(AF_INET, (struct sockaddr *)&clientAddress, ip, INET_ADDRSTRLEN);
 	printf("%s connected\n",ip);
-	client.mySocket = clientSocket;
-	strcpy(client.ip, ip);
-	clients[numberOfConnectedClients] = clientSocket;
-	connectedClients.push_back(client);
-	loginUser(connectedClients[numberOfConnectedClients]);
+	displayClintConsole(clientSocket, ip);
 	numberOfConnectedClients++;
 	pthread_create(&receiveThread, NULL, receiveMessage, &client);
 	pthread_mutex_unlock(&mutex);
 }
 
-void Server::loginUser(ClientInfo& client)
+void Server::loginUser(int socket, char* ip)
 {
     bool flag = true;
 	int length = 0;
 	char message[100];
-    string userId, password;
 	int receiverSocket;
+	pair<string, string> logintDetails;
 
     while(flag)
     {
-		memset(message,'\0',sizeof(message));
-		strcpy(message, "\nEnter UserId : ");
-        sleep(1);
-		send(client.mySocket, message, strlen(message),0);
-        length = recv(client.mySocket, message, 500, 0);
-        message[length] = '\0';
-		userId = message;
+		logintDetails = getUserCredentials(socket);
 
-		memset(message,'\0',sizeof(message));
-		strcpy(message, "\nEnter Password : ");
-        send(client.mySocket, message,strlen(message),0);
-        length = recv(client.mySocket,message,500,0);
-		message[length] = '\0';
-        password = message;
-
-		if(getConnectUserLoginStatus(userId, password))
+		if(getConnectUserLoginStatus(logintDetails.first, logintDetails.second))
 		{
 			strcpy(message, "3");
-			send(client.mySocket, message, strlen(message),0);
+			send(socket, message, strlen(message),0);
 			sleep(1);
 			continue;
 		}
 
-		bool isUserLoggedIn = dbOperator.checkExists(userId, password);
+		bool isUserLoggedIn = dbOperator.checkExists(logintDetails.first, logintDetails.second);
 		
 		if(isUserLoggedIn)
 		{
 			flag = false;
 			strcpy(message, "1");
-			send(client.mySocket, message, strlen(message),0);
+			send(socket, message, strlen(message),0);
 		}	
         else
 		{
 			strcpy(message, "2");
-			send(client.mySocket, message, strlen(message),0);
+			send(socket, message, strlen(message),0);
 		}
     }
 
-	client.userId = userId;
-	client.password = password;
+	client.mySocket = socket;
+	strcpy(client.ip, ip);
+	client.userId = logintDetails.first;
+	client.password = logintDetails.second;
 	client.loginStatus = true;
+	clients[numberOfConnectedClients] = socket;
+	connectedClients.push_back(client);
 }
 
 bool Server::getConnectUserLoginStatus(string userId, string password)
@@ -166,4 +155,59 @@ bool Server::getConnectUserLoginStatus(string userId, string password)
 		}
 	}
 	return false;
+}
+
+void Server::displayClintConsole(int socket, char* ip)
+{
+	memset(message,'\0',sizeof(message));
+	strcpy(message, "\n\t\x1b[1m\x1B[93mWELCOME TO CHAT_APP\033[0m\x1b[0m\n\nPlease select the option.\n\n1: Register\n2: login\n");
+	sleep(1);
+	send(socket, message, strlen(message),0);
+	memset(message,'\0',sizeof(message));
+	int length = recv(socket, message, 500, 0);
+	message[length] = '\0';
+	
+	switch (message[0])
+	{
+		case '1':
+			{
+				registerUser(socket);
+				loginUser(socket, ip);
+			}
+			break;
+		case '2':
+			loginUser(socket, ip);
+			break;
+	}
+}
+
+void Server::registerUser(int clientSocket)
+{
+	pair<string, string> registrationDetails = getUserCredentials(clientSocket);
+	//Add DB method to register user
+}
+
+pair<string, string> Server::getUserCredentials(int socket)
+{
+	int length;
+	pair<string, string> credentials;
+
+	memset(message,'\0',sizeof(message));
+	strcpy(message, "\n\x1B[36mEnter UserId : \033[0m");
+	sleep(1);
+	send(socket, message, strlen(message),0);
+	memset(message,'\0',sizeof(message));
+	length = recv(socket, message, 500, 0);
+	message[length] = '\0';
+	credentials.first= message;
+
+	memset(message,'\0',sizeof(message));
+	strcpy(message, "\n\x1B[36mEnter Password : \033[0m");
+	send(socket, message,strlen(message),0);
+	memset(message,'\0',sizeof(message));
+	length = recv(socket, message, 500, 0);
+	message[length] = '\0';
+	credentials.second = message;
+
+	return credentials;
 }
