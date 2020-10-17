@@ -21,6 +21,7 @@ class Client
 
 	void login();
 	void registerClient();
+	void displayOptions();
     void sendMessage();
     static void* receiveMessage(void*);
 

@@ -111,6 +111,7 @@ void Server::loginUser(int socket, char* ip)
 
     while(flag)
     {
+		sleep(1);
 		logintDetails = getUserCredentials(socket);
 
 		if(getConnectUserLoginStatus(logintDetails.first, logintDetails.second))
@@ -121,7 +122,7 @@ void Server::loginUser(int socket, char* ip)
 			continue;
 		}
 
-		bool isUserLoggedIn = dbOperator.checkExists(logintDetails.first, logintDetails.second);
+		bool isUserLoggedIn = dbOperator.validateUser(logintDetails.first, logintDetails.second);
 		
 		if(isUserLoggedIn)
 		{
@@ -183,8 +184,29 @@ void Server::displayClintConsole(int socket, char* ip)
 
 void Server::registerUser(int clientSocket)
 {
-	pair<string, string> registrationDetails = getUserCredentials(clientSocket);
-	//Add DB method to register user
+	pair<string, string> registrationDetails;
+
+	while (true)
+	{
+		sleep(1);
+		registrationDetails = getUserCredentials(clientSocket);
+		
+		if (dbOperator.validateUser(registrationDetails.first, registrationDetails.second) == true)
+		{
+			memset(message,'\0',sizeof(message));
+			strcpy(message, "N");
+			send(clientSocket, message, strlen(message), 0);
+		}
+		else
+		{
+			memset(message,'\0',sizeof(message));
+			strcpy(message, "Y");
+			send(clientSocket, message, strlen(message), 0);
+			break;
+		}
+	}
+	
+	dbOperator.registerUser(registrationDetails.first, registrationDetails.second);
 }
 
 pair<string, string> Server::getUserCredentials(int socket)
@@ -194,7 +216,6 @@ pair<string, string> Server::getUserCredentials(int socket)
 
 	memset(message,'\0',sizeof(message));
 	strcpy(message, "\n\x1B[36mEnter UserId : \033[0m");
-	sleep(1);
 	send(socket, message, strlen(message),0);
 	memset(message,'\0',sizeof(message));
 	length = recv(socket, message, 500, 0);
