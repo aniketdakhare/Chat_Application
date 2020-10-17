@@ -28,3 +28,19 @@ void DBOperations::registerUser(string userId, string password)
 
     collection.insert_one(document.view());
 }
+
+bool DBOperations::checkUserExists(string userId)
+{
+    auto collection = conn["DemoUserDB"]["user"];
+    auto cursor = collection.find({});
+
+    for(auto&& data : cursor)
+    {
+        if(data["userId"].get_utf8().value == userId)
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}

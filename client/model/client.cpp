@@ -126,7 +126,7 @@ void Client::registerClient()
 
 		if (message[0] == 'N')
 		{
-			cout << "\n\x1B[31mUser is already registered\033[0m\n\x1B[33mPlease change your UserId or Password.\n\033[0m" << endl;
+			cout << "\n\x1B[31mUser is already registered\033[0m\n\x1B[33mPlease choose another userId.\n\033[0m" << endl;
 			continue;
 		}
 

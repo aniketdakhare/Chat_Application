@@ -191,7 +191,7 @@ void Server::registerUser(int clientSocket)
 		sleep(1);
 		registrationDetails = getUserCredentials(clientSocket);
 		
-		if (dbOperator.validateUser(registrationDetails.first, registrationDetails.second) == true)
+		if (dbOperator.checkUserExists(registrationDetails.first) == true)
 		{
 			memset(message,'\0',sizeof(message));
 			strcpy(message, "N");

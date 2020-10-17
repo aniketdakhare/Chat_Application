@@ -19,4 +19,5 @@ class DBOperations
     public:
         void registerUser(string, string);
         bool validateUser(string, string);
+        bool checkUserExists(string);
 };
