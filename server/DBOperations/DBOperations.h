@@ -17,5 +17,6 @@ class DBOperations
     bsoncxx::builder::stream::document document{};
 
     public:
-        bool checkExists(string, string);
+        void registerUser(string, string);
+        bool validateUser(string, string);
 };

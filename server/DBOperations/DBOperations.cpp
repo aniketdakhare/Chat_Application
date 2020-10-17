@@ -1,6 +1,6 @@
 #include "DBOperations.h"
 
-bool DBOperations::checkExists(string userId, string password)
+bool DBOperations::validateUser(string userId, string password)
 {
     auto collection = conn["DemoUserDB"]["user"];
     auto cursor = collection.find({});
@@ -17,4 +17,14 @@ bool DBOperations::checkExists(string userId, string password)
     }
     
     return false;
+}
+
+void DBOperations::registerUser(string userId, string password)
+{
+    auto collection = conn["DemoUserDB"]["user"];
+
+    document << "userId" << userId
+            << "password" << password;
+
+    collection.insert_one(document.view());
 }
