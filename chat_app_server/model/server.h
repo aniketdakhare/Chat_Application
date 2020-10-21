@@ -27,19 +27,24 @@ class Server
   
     static Utility util;
     static DBOperations dbOperator;
-    static vector<int> clients;
     static pthread_mutex_t mutex;
-    static vector<ClientInfo> connectedClients;
+    static vector<ClientInfo> registeredClients;
 
-    static void sendMessage(char*, int);
+    static void sendMessage(string, string, int);
     static void *receiveMessage(void *sock);
-    static void loginUser(string, string, int);
+    static void loginUser(string, string, ClientInfo&);
     static void registerUser(string, string, int);
-    static bool getConnectUserLoginStatus(string, string);
+    static bool getConnectedUserLoginStatus(string);
     static void logout(ClientInfo);
-        
+    static void displayRegisteredUsers(ClientInfo);
+  
     void handleSession(int);    
 
     public:
+        Server()
+        {
+            registeredClients = dbOperator.getRegisteredClientsList();
+        }
+
         void startServer();
 };

@@ -27,7 +27,58 @@ void DBOperations::registerUser(string userId, string password)
 
     bsoncxx::document::value data = builder
                             << "user_id" << userId
-                            << "password" << password << finalize;
+                            << "password" << password
+                            << "online_status" << false
+                            << "socket_number" << 1 << finalize;
 
     collection.insert_one(data.view());
+}
+
+bool DBOperations::checkUserExists(string userId)
+{
+    mongocxx::collection collection = conn["DemoUserDB"]["user"];
+    mongocxx::cursor cursor = collection.find({});
+
+    for(auto&& data : cursor)
+    {
+        if(data["user_id"].get_utf8().value == userId)
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+void DBOperations::updateOnlineStatus(ClientInfo client)
+{
+    mongocxx::collection collection = conn["DemoUserDB"]["user"];
+
+    collection.update_one(
+        make_document(kvp("user_id", client.userId)),
+        make_document( kvp("$set", make_document(
+                                    kvp("online_status", client.loginStatus),
+                                    kvp("socket_number", client.mySocket)
+                                    ))));
+}
+
+vector<ClientInfo> DBOperations::getRegisteredClientsList()
+{
+    vector<ClientInfo> registeredClientsList;
+
+    mongocxx::collection collection = conn["DemoUserDB"]["user"];
+
+    mongocxx::cursor result = collection.find({});
+
+    for(auto client : result)
+    {
+        ClientInfo cl;
+        cl.userId = client["user_id"].get_utf8().value;
+        cl.loginStatus = client["online_status"].get_bool().value;
+        cl.mySocket = client["socket_number"].get_int32();
+        cl.password = client["password"].get_utf8().value;
+        
+        registeredClientsList.push_back(cl);
+    }
+    return registeredClientsList;
 }

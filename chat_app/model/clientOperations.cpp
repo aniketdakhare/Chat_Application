@@ -2,8 +2,6 @@
 
 void Client::displayOptions()
 {
-	string x = "\n";
-	cout << x.size() << endl;
 	int choice;
 	cout << "\n\t\x1b[1m\x1B[93mWELCOME TO CHAT_APP\033[0m\x1b[0m\n\nPlease select the option.\n\n1: Register\n2: login\n";
 	cin >> choice;
@@ -19,7 +17,7 @@ void Client::displayOptions()
 		case 2:
 			login();
 			break;
-	}
+	}	
 }
 
 void Client::registerClient()
@@ -95,5 +93,41 @@ void Client::login()
 		{
 			cout << "\n\x1B[31mGiven user is already logged in...!!!\033[0m" << endl;
 		}
-	}	
+	}
+
+	displayMenu();
+}
+
+void Client::selectClientToChat()
+{
+	memset(message, '\0', sizeof(message));
+	recv(mySocket, message, 500, 0);
+	cout << message;
+	cin >> receiverClient;
+	system("clear");
+}
+
+void Client::displayMenu()
+{
+	int choice;
+	bool flag = true;
+
+	while(flag)
+	{
+		cout << "\n\x1B[33mSelect Your Option: \033[0m\n\n1: Select UserID to chat\n2: Logout\n\n";
+		cin >> choice;
+
+		switch(choice)
+		{
+			case 1:
+				flag = false;
+				selectClientToChat();
+				break;
+			case 2:
+				exit(0);
+				break;
+			default:
+				cout << "\n\x1B[31mInvalid Choice..\033[0m" << endl;
+		}
+	}
 }

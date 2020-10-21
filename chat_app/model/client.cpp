@@ -1,6 +1,9 @@
 #include "client.h"
 
+string Client::receiverClient;
 char Client::message[500];
+pthread_mutex_t Client::mutex;
+
 
 void Client::startUser()
 {
@@ -20,18 +23,30 @@ void Client::startUser()
 
 void Client::sendMessage()
 {
+	string sendMsg;
+	vector<string> resvMsg;
 	pthread_create(&receiveThread, NULL, receiveMessage, &mySocket);
-
+	
 	while(fgets(message, 500, stdin) > 0) 
     {
-		if(write(mySocket, message, strlen(message)) < 0) 
+		resvMsg = Utility::split(message, "-");
+		if (resvMsg.at(0)[0] == '@')
+		{
+			receiverClient = resvMsg.at(0).substr(1, resvMsg.at(0).size() - 1);
+			sendMsg = receiverClient + "#" + resvMsg[1];
+		}
+		else
+			sendMsg = receiverClient + "#" + message;		
+		
+		if(write(mySocket, sendMsg.c_str(), sendMsg.size()) < 0) 
         {
 			perror("message not sent");
 			exit(1);
 		}
+
 		memset(message, '\0', sizeof(message));
 	}
-	
+
     pthread_join(receiveThread, NULL);
 	close(mySocket);
 }
@@ -45,7 +60,15 @@ void *Client::receiveMessage(void* socket)
     while((len = recv(receiverSocket, message, sizeof(message), 0)) > 0) 
     {
 		message[len] = '\0';
-		cout << message;
+		if (strstr(message, "Registered") > 0)
+		{
+			system("clear");
+			cout << message;
+		}
+		else
+			cout << message;
+
 		memset(message, '\0', sizeof(message));
 	}
+	return 0;
 }
