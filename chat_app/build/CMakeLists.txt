@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
-add_executable(executableClient ../controller/clientController.cpp ../model/client.cpp)
+add_executable(executableClient ../controller/clientController.cpp ../model/client.cpp ../model/clientOperations.cpp)
 
 find_package(Threads REQUIRED)
 

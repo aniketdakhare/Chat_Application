@@ -7,6 +7,7 @@
 #include <pthread.h>
 #include <vector>
 #include "user.h"
+#include "utility.h"
 #include "../DBOperations/DBOperations.h"
 
 #define PORT 9090
@@ -15,28 +16,30 @@ using namespace std;
 
 class Server
 { 
+    protected:
+    
     ClientInfo client;
-	struct sockaddr_in serverAddress, clientAddress;
+	sockaddr_in serverAddress, clientAddress;
 	pthread_t receiveThread;
+
 	char ip[INET_ADDRSTRLEN];
+    int clientSocket, serverSocket;
   
+    static Utility util;
     static DBOperations dbOperator;
-    static int clients[1];
-	static char message[500];
-    static int numberOfConnectedClients;
+    static vector<int> clients;
     static pthread_mutex_t mutex;
     static vector<ClientInfo> connectedClients;
 
     static void sendMessage(char*, int);
     static void *receiveMessage(void *sock);
+    static void loginUser(string, string, int);
+    static void registerUser(string, string, int);
+    static bool getConnectUserLoginStatus(string, string);
+    static void logout(ClientInfo);
+        
+    void handleSession(int);    
 
-    void loginUser(int, char*);
-    void displayClintConsole(int, char*);
-    void registerUser(int);
-    bool getConnectUserLoginStatus(string, string);
-    void handleSession(int);
-    pair<string, string> getUserCredentials(int);
-    
     public:
         void startServer();
 };

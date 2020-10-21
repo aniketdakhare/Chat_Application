@@ -8,7 +8,7 @@ bool DBOperations::validateUser(string userId, string password)
 
     for(auto&& data : cursor)
     {
-        id = data["userId"];
+        id = data["user_id"];
         pass = data["password"];
         if(id.get_utf8().value == userId && pass.get_utf8().value == password)
         {
@@ -23,24 +23,11 @@ void DBOperations::registerUser(string userId, string password)
 {
     auto collection = conn["DemoUserDB"]["user"];
 
-    document << "userId" << userId
-            << "password" << password;
+    auto builder = bsoncxx::builder::stream::document{};
 
-    collection.insert_one(document.view());
-}
+    bsoncxx::document::value data = builder
+                            << "user_id" << userId
+                            << "password" << password << finalize;
 
-bool DBOperations::checkUserExists(string userId)
-{
-    auto collection = conn["DemoUserDB"]["user"];
-    auto cursor = collection.find({});
-
-    for(auto&& data : cursor)
-    {
-        if(data["userId"].get_utf8().value == userId)
-        {
-            return true;
-        }
-    }
-    
-    return false;
+    collection.insert_one(data.view());
 }
