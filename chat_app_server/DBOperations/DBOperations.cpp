@@ -85,7 +85,7 @@ vector<ClientInfo> DBOperations::getRegisteredClientsList()
 
 void DBOperations::storeClientMessages(string sender, string receiver, string message)
 {
-    string collectionName = getCollectionName(sender, receiver);
+    string collectionName = util.getCollectionName(sender, receiver);
     mongocxx::collection collection = conn["DemoUserDB"][collectionName];
 
     auto time = chrono::system_clock::to_time_t(chrono::system_clock::now());
@@ -101,10 +101,24 @@ void DBOperations::storeClientMessages(string sender, string receiver, string me
     collection.insert_one(data.view());
 }
 
-string DBOperations::getCollectionName(string sender, string receiver)
+vector<pair<string, string>> DBOperations::getClientMessages(string sender, string receiver)
 {
-    string str = sender+receiver;
+    vector<pair<string, string>> messages;
+    bsoncxx::document::element msg;
+    string collectionName = util.getCollectionName(sender, receiver);
+    mongocxx::collection collection = conn["DemoUserDB"][collectionName];
 
-    sort(str.begin(), str.end());
-    return str;
+    mongocxx::cursor result = collection.find({});
+
+    for(bsoncxx::document::view data : result)
+    {
+        pair<string, string> message;
+        message.first = data["sender"].get_utf8().value;
+        message.second = data["message"].get_utf8().value;
+        if(data["message"].get_utf8().value.size() > 0)
+        {
+            messages.push_back(message);
+        } 
+    }
+    return messages;
 }

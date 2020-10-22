@@ -29,6 +29,7 @@ void Client::sendMessage()
 	
 	while(fgets(message, 500, stdin) > 0) 
     {
+		message[strlen(message)] = '\0';
 		resvMsg = Utility::split(message, "-");
 		if (resvMsg.at(0)[0] == '@')
 		{
@@ -59,14 +60,14 @@ void *Client::receiveMessage(void* socket)
 	
     while((len = recv(receiverSocket, message, sizeof(message), 0)) > 0) 
     {
-		message[len] = '\0';
-		if (strstr(message, "Registered") > 0)
+		message[len - 1] = '\0';
+		if (strstr(message, "Registered"))
 		{
 			system("clear");
 			cout << message;
 		}
 		else
-			cout << message;
+			cout << "\x1B[36m" << message << "\033[0m\n";
 
 		memset(message, '\0', sizeof(message));
 	}

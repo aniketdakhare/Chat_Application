@@ -7,6 +7,7 @@
 #include <mongocxx/instance.hpp>
 #include <vector>
 #include "../model/user.h"
+#include "../model/utility.h"
 
 using namespace std;
 
@@ -25,8 +26,8 @@ class DBOperations
     bsoncxx::builder::stream::document document{};
     bsoncxx::builder::basic::document basicDocument{};
 
-    string getCollectionName(string, string);
-    
+    Utility util;
+
     public:
         void registerUser(string, string);
         bool validateUser(string, string);
@@ -34,4 +35,5 @@ class DBOperations
         void updateOnlineStatus(ClientInfo);
         vector<ClientInfo> getRegisteredClientsList();
         void storeClientMessages(string, string, string);
+        vector<pair<string, string>> getClientMessages(string, string);
 };

@@ -108,6 +108,6 @@ void Server::displayRegisteredUsers(ClientInfo cl)
 		}	
 	}
 
-	onlineClients += "\n\x1B[33mSelect userId to chat with: \033[0m";
+	onlineClients += "\n\x1B[33mSelect userId to chat with:  \033[0m";
 	send(cl.mySocket, onlineClients.c_str(), onlineClients.size(), 0);
 }

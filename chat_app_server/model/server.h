@@ -17,29 +17,29 @@ using namespace std;
 class Server
 { 
     protected:
+        ClientInfo client;
+        sockaddr_in serverAddress, clientAddress;
+        pthread_t receiveThread;
+
+        char ip[INET_ADDRSTRLEN];
+        int clientSocket, serverSocket;
     
-    ClientInfo client;
-	sockaddr_in serverAddress, clientAddress;
-	pthread_t receiveThread;
+        static Utility util;
+        static DBOperations dbOperator;
+        static pthread_mutex_t mutex;
+        static vector<ClientInfo> registeredClients;
 
-	char ip[INET_ADDRSTRLEN];
-    int clientSocket, serverSocket;
-  
-    static Utility util;
-    static DBOperations dbOperator;
-    static pthread_mutex_t mutex;
-    static vector<ClientInfo> registeredClients;
+        static void sendMessage(string, string, int);
+        static void *receiveMessage(void *sock);
+        static void loginUser(string, string, ClientInfo&);
+        static void registerUser(string, string, int);
+        static bool getConnectedUserLoginStatus(string);
+        static void logout(ClientInfo);
+        static void displayRegisteredUsers(ClientInfo);
+        static string loadMessages(string, string);
 
-    static void sendMessage(string, string, int);
-    static void *receiveMessage(void *sock);
-    static void loginUser(string, string, ClientInfo&);
-    static void registerUser(string, string, int);
-    static bool getConnectedUserLoginStatus(string);
-    static void logout(ClientInfo);
-    static void displayRegisteredUsers(ClientInfo);
-  
-    void handleSession(int);    
-
+        void handleSession(int);    
+   
     public:
         Server()
         {
