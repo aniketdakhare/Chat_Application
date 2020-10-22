@@ -24,6 +24,8 @@ class DBOperations
     mongocxx::client conn{mongocxx::uri{}};
     bsoncxx::builder::stream::document document{};
     bsoncxx::builder::basic::document basicDocument{};
+
+    string getCollectionName(string, string);
     
     public:
         void registerUser(string, string);
@@ -31,4 +33,5 @@ class DBOperations
         bool checkUserExists(string);
         void updateOnlineStatus(ClientInfo);
         vector<ClientInfo> getRegisteredClientsList();
+        void storeClientMessages(string, string, string);
 };

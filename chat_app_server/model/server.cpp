@@ -63,6 +63,7 @@ void *Server::receiveMessage(void *sock)
 		if (msg[1] == "\n")
 			continue;
 		
+		dbOperator.storeClientMessages(client.userId, msg[0], msg[1]);
 		message = client.userId + ": " + msg[1];
 		sendMessage(msg[0], message, client.mySocket);
 		memset(resvMsg,'\0',sizeof(resvMsg));

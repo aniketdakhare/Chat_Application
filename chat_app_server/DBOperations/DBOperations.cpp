@@ -2,8 +2,8 @@
 
 bool DBOperations::validateUser(string userId, string password)
 {
-    auto collection = conn["DemoUserDB"]["user"];
-    auto cursor = collection.find({});
+    mongocxx::collection collection = conn["DemoUserDB"]["user"];
+    mongocxx::cursor cursor = collection.find({});
     bsoncxx::document::element id, pass;
 
     for(auto&& data : cursor)
@@ -21,7 +21,7 @@ bool DBOperations::validateUser(string userId, string password)
 
 void DBOperations::registerUser(string userId, string password)
 {
-    auto collection = conn["DemoUserDB"]["user"];
+    mongocxx::collection collection = conn["DemoUserDB"]["user"];
 
     auto builder = bsoncxx::builder::stream::document{};
 
@@ -81,4 +81,30 @@ vector<ClientInfo> DBOperations::getRegisteredClientsList()
         registeredClientsList.push_back(cl);
     }
     return registeredClientsList;
+}
+
+void DBOperations::storeClientMessages(string sender, string receiver, string message)
+{
+    string collectionName = getCollectionName(sender, receiver);
+    mongocxx::collection collection = conn["DemoUserDB"][collectionName];
+
+    auto time = chrono::system_clock::to_time_t(chrono::system_clock::now());
+
+    auto builder = bsoncxx::builder::stream::document{};
+
+    bsoncxx::document::value data = builder
+                            << "sender" << sender
+                            << "receiver" << receiver
+                            << "message" << message
+                            << "time" << time << finalize;
+
+    collection.insert_one(data.view());
+}
+
+string DBOperations::getCollectionName(string sender, string receiver)
+{
+    string str = sender+receiver;
+
+    sort(str.begin(), str.end());
+    return str;
 }
