@@ -1,5 +1,5 @@
 #pragma once
-#include<iostream>
+#include <iostream>
 #include <sys/socket.h>
 #include <string.h>
 #include <unistd.h>
@@ -15,36 +15,36 @@
 using namespace std;
 
 class Server
-{ 
-    protected:
-        ClientInfo client;
-        sockaddr_in serverAddress, clientAddress;
-        pthread_t receiveThread;
+{
+protected:
+    ClientInfo client;
+    sockaddr_in serverAddress, clientAddress;
+    pthread_t receiveThread;
 
-        char ip[INET_ADDRSTRLEN];
-        int clientSocket, serverSocket;
-    
-        static Utility util;
-        static DBOperations dbOperator;
-        static pthread_mutex_t mutex;
-        static vector<ClientInfo> registeredClients;
+    char ip[INET_ADDRSTRLEN];
+    int clientSocket, serverSocket;
 
-        static void sendMessage(string, string, int);
-        static void *receiveMessage(void *sock);
-        static void loginUser(string, string, ClientInfo&);
-        static void registerUser(string, string, int);
-        static bool getConnectedUserLoginStatus(string);
-        static void logout(ClientInfo);
-        static void displayRegisteredUsers(ClientInfo);
-        static string loadMessages(string, string);
+    static Utility util;
+    static DBOperations dbOperator;
+    static pthread_mutex_t mutex;
+    static vector<ClientInfo> registeredClients;
 
-        void handleSession(int);    
-   
-    public:
-        Server()
-        {
-            registeredClients = dbOperator.getRegisteredClientsList();
-        }
+    static void sendMessage(string, string, int);
+    static void *receiveMessage(void *sock);
+    static void loginUser(string, string, ClientInfo &);
+    static void registerUser(string, string, int);
+    static bool getConnectedUserLoginStatus(string);
+    static void logout(ClientInfo);
+    static void displayRegisteredUsers(ClientInfo);
+    static string loadMessages(string, string);
 
-        void startServer();
+    void handleSession(int);
+
+public:
+    Server()
+    {
+        registeredClients = dbOperator.getRegisteredClientsList();
+    }
+
+    void startServer();
 };

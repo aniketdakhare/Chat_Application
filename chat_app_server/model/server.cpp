@@ -1,6 +1,6 @@
 #include "server.h"
 
-pthread_mutex_t  Server::mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t Server::mutex = PTHREAD_MUTEX_INITIALIZER;
 vector<ClientInfo> Server::registeredClients;
 DBOperations Server::dbOperator;
 Utility Server::util;
@@ -9,18 +9,18 @@ void Server::sendMessage(string receiver, string message, int socket)
 {
 	pthread_mutex_lock(&mutex);
 
-	for(int i = 0; i < registeredClients.size(); i++) 
-    {
-		if(registeredClients[i].userId == receiver)
-        {
-			if(send(registeredClients[i].mySocket, message.c_str(), message.size(), 0) < 0) 
-            {
+	for (int i = 0; i < registeredClients.size(); i++)
+	{
+		if (registeredClients[i].userId == receiver)
+		{
+			if (send(registeredClients[i].mySocket, message.c_str(), message.size(), 0) < 0)
+			{
 				perror("sending failure");
 				continue;
 			}
 		}
 	}
-	pthread_mutex_unlock(&mutex);	
+	pthread_mutex_unlock(&mutex);
 }
 
 void *Server::receiveMessage(void *sock)
@@ -35,15 +35,15 @@ void *Server::receiveMessage(void *sock)
 	bzero(sendMsg, sizeof(sendMsg));
 	bzero(resvMsg, sizeof(resvMsg));
 
-	while((length = recv(client.mySocket, resvMsg, 500, 0)) > 0) 
+	while ((length = recv(client.mySocket, resvMsg, 500, 0)) > 0)
 	{
 		resvMsg[length] = '\0';
 		msg = util.split(resvMsg, "#");
 
 		if (msg[0] == "REGISTER")
-		{	
+		{
 			registerUser(msg[1], msg[2], client.mySocket);
-			memset(resvMsg, '\0', sizeof(resvMsg));	
+			memset(resvMsg, '\0', sizeof(resvMsg));
 			continue;
 		}
 
@@ -63,7 +63,7 @@ void *Server::receiveMessage(void *sock)
 
 		if (msg[1] == "\n")
 		{
-			if(counter == 1)
+			if (counter == 1)
 			{
 				message = loadMessages(client.userId, msg[0]);
 				send(client.mySocket, message.c_str(), message.size(), 0);
@@ -71,17 +71,17 @@ void *Server::receiveMessage(void *sock)
 			}
 			continue;
 		}
-			
+
 		dbOperator.storeClientMessages(client.userId, msg[0], msg[1]);
 		message = client.userId + ": " + msg[1];
 		sendMessage(msg[0], message, client.mySocket);
 		memset(resvMsg, '\0', sizeof(resvMsg));
 	}
-	
+
 	pthread_mutex_lock(&mutex);
 	logout(client);
 	pthread_mutex_unlock(&mutex);
-	
+
 	return 0;
 }
 
@@ -100,8 +100,8 @@ void Server::startServer()
 
 	listen(serverSocket, 5);
 	cout << "Server Started.." << endl;
-	
-	while(1) 
+
+	while (1)
 	{
 		clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddress, &clientAddressSize);
 		handleSession(clientSocket);
@@ -123,9 +123,9 @@ string Server::loadMessages(string sender, string receiver)
 	vector<pair<string, string>> messageDetails = dbOperator.getClientMessages(sender, receiver);
 	string message;
 
-	for(pair<string, string> msg : messageDetails)
+	for (pair<string, string> msg : messageDetails)
 	{
-		if(msg.first == sender)
+		if (msg.first == sender)
 			message += msg.second;
 		else
 			message += "\x1B[36m" + msg.first + ": " + msg.second + "\033[0m";

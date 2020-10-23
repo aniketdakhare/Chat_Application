@@ -18,8 +18,8 @@ vector<string> Utility::split(const string &client_response, string delimiter)
 
 string Utility::getCollectionName(string sender, string receiver)
 {
-    string str = sender+receiver;
-    
+    string str = sender + receiver;
+
     sort(str.begin(), str.end());
     return str;
 }

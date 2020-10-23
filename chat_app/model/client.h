@@ -17,21 +17,20 @@ class Client
 {
 	char ip[INET_ADDRSTRLEN];
 	int mySocket;
-	pthread_t receiveThread;	
+	pthread_t receiveThread;
 	struct sockaddr_in receiverAddress;
 	static char message[500];
 	static string receiverClient;
-    static pthread_mutex_t mutex;
-
+	static pthread_mutex_t mutex;
 
 	void login();
 	void registerClient();
 	void displayOptions();
-    void sendMessage();
+	void sendMessage();
 	void selectClientToChat();
 	void displayMenu();
-    static void* receiveMessage(void*);
+	static void *receiveMessage(void *);
 
-    public:
-        void startUser();       
+public:
+	void startUser();
 };

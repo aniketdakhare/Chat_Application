@@ -11,13 +11,13 @@
 
 using namespace std;
 
+using bsoncxx::builder::basic::kvp;
+using bsoncxx::builder::basic::make_array;
+using bsoncxx::builder::basic::make_document;
 using bsoncxx::builder::stream::close_document;
 using bsoncxx::builder::stream::document;
 using bsoncxx::builder::stream::finalize;
 using bsoncxx::builder::stream::open_document;
-using bsoncxx::builder::basic::kvp;
-using bsoncxx::builder::basic::make_array;
-using bsoncxx::builder::basic::make_document;
 
 class DBOperations
 {
@@ -28,12 +28,12 @@ class DBOperations
 
     Utility util;
 
-    public:
-        void registerUser(string, string);
-        bool validateUser(string, string);
-        bool checkUserExists(string);
-        void updateOnlineStatus(ClientInfo);
-        vector<ClientInfo> getRegisteredClientsList();
-        void storeClientMessages(string, string, string);
-        vector<pair<string, string>> getClientMessages(string, string);
+public:
+    void registerUser(string, string);
+    bool validateUser(string, string);
+    bool checkUserExists(string);
+    void updateOnlineStatus(ClientInfo);
+    vector<ClientInfo> getRegisteredClientsList();
+    void storeClientMessages(string, string, string);
+    vector<pair<string, string>> getClientMessages(string, string);
 };

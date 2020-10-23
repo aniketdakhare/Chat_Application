@@ -5,9 +5,9 @@ bool Server::getConnectedUserLoginStatus(string userId)
 	registeredClients = dbOperator.getRegisteredClientsList();
 	bool status;
 
-	for(ClientInfo client : registeredClients)
+	for (ClientInfo client : registeredClients)
 	{
-		if(client.userId == userId)
+		if (client.userId == userId)
 		{
 			status = client.loginStatus;
 		}
@@ -35,10 +35,10 @@ void Server::registerUser(string userId, string password, int socket)
 	}
 }
 
-void Server::loginUser(string userId, string password, ClientInfo& cl)
+void Server::loginUser(string userId, string password, ClientInfo &cl)
 {
 	string sendMsg;
-	if(getConnectedUserLoginStatus(userId))
+	if (getConnectedUserLoginStatus(userId))
 	{
 		sendMsg = "3";
 		sleep(1);
@@ -47,13 +47,13 @@ void Server::loginUser(string userId, string password, ClientInfo& cl)
 	}
 
 	bool isUserLoggedIn = dbOperator.validateUser(userId, password);
-	
-	if(isUserLoggedIn)
+
+	if (isUserLoggedIn)
 	{
 		sendMsg = "1";
 		sleep(1);
 		send(cl.mySocket, sendMsg.c_str(), sendMsg.size(), 0);
-	}	
+	}
 	else
 	{
 		sendMsg = "2";
@@ -71,9 +71,9 @@ void Server::loginUser(string userId, string password, ClientInfo& cl)
 
 void Server::logout(ClientInfo cl)
 {
-	for(int i = 0; i < registeredClients.size(); i++) 
+	for (int i = 0; i < registeredClients.size(); i++)
 	{
-		if(registeredClients[i].userId == cl.userId) 
+		if (registeredClients[i].userId == cl.userId)
 		{
 			cout << registeredClients[i].userId << " disconnected" << endl;
 			cl.loginStatus = false;
@@ -89,23 +89,23 @@ void Server::displayRegisteredUsers(ClientInfo cl)
 	registeredClients = dbOperator.getRegisteredClientsList();
 	string onlineClients = "\n\x1B[93mRegistered Users\033[0m\n\n";
 
-	for(int i = 1; i <= registeredClients.size(); i++)
+	for (int i = 1; i <= registeredClients.size(); i++)
 	{
-		if(registeredClients[i - 1].userId != cl.userId)
+		if (registeredClients[i - 1].userId != cl.userId)
 		{
-			if(registeredClients[i - 1].loginStatus == true)
+			if (registeredClients[i - 1].loginStatus == true)
 			{
-				onlineClients += to_string(i) +": \x1B[32m"+ registeredClients[i - 1].userId + "\033[0m\n";
+				onlineClients += to_string(i) + ": \x1B[32m" + registeredClients[i - 1].userId + "\033[0m\n";
 			}
 			else
 			{
-				onlineClients += to_string(i) +": "+ registeredClients[i - 1].userId + "\n";
-			}	
-		}	
+				onlineClients += to_string(i) + ": " + registeredClients[i - 1].userId + "\n";
+			}
+		}
 		else
 		{
-			onlineClients += to_string(i) +": \x1B[35m"+ registeredClients[i - 1].userId + " (You)\033[0m\n";
-		}	
+			onlineClients += to_string(i) + ": \x1B[35m" + registeredClients[i - 1].userId + " (You)\033[0m\n";
+		}
 	}
 
 	onlineClients += "\n\x1B[33mSelect userId to chat with:  \033[0m";
