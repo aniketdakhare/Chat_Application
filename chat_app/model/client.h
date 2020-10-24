@@ -21,6 +21,7 @@ class Client
 	struct sockaddr_in receiverAddress;
 	static char message[500];
 	static string receiverClient;
+	static string myUserId;
 	static pthread_mutex_t mutex;
 
 	void login();

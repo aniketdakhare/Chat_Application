@@ -3,6 +3,7 @@
 void Client::displayOptions()
 {
 	int choice;
+	system("clear");
 	cout << "\n\t\x1b[1m\x1B[93mWELCOME TO CHAT_APP\033[0m\x1b[0m\n\nPlease select the option.\n\n1: Register\n2: login\n";
 	cin >> choice;
 
@@ -51,7 +52,10 @@ void Client::registerClient()
 		}
 
 		if (msg[0] == 'Y')
+		{
 			break;
+		}
+		
 	}
 }
 
@@ -82,6 +86,7 @@ void Client::login()
 		if (message[0] == '1')
 		{
 			system("clear");
+			myUserId = userId;
 			cout << "\n\x1B[32mLogin Successfully...\033[0m" << endl;
 			break;
 		}

@@ -3,6 +3,7 @@
 string Client::receiverClient;
 char Client::message[500];
 pthread_mutex_t Client::mutex;
+string Client::myUserId;
 
 void Client::startUser()
 {
@@ -16,7 +17,7 @@ void Client::startUser()
 	connect(mySocket, (struct sockaddr *)&receiverAddress, sizeof(receiverAddress));
 
 	displayOptions();
-	printf("\n\033[3;42;30mONLINE\033[0m\t\t\n");
+	cout << "\n\033[3;42;30mONLINE - " << myUserId << "\033[0m\t\t\n";
 	sendMessage();
 }
 
@@ -30,6 +31,10 @@ void Client::sendMessage()
 	{
 		message[strlen(message)] = '\0';
 		resvMsg = Utility::split(message, "-");
+
+		if(strstr(message, "$LOGOUT"))
+			exit(0);
+
 		if (resvMsg.at(0)[0] == '@')
 		{
 			receiverClient = resvMsg.at(0).substr(1, resvMsg.at(0).size() - 1);
@@ -66,7 +71,7 @@ void *Client::receiveMessage(void *socket)
 			cout << message;
 		}
 		else
-			cout << "\x1B[36m" << message << "\033[0m\n";
+			cout << message << endl;
 
 		memset(message, '\0', sizeof(message));
 	}

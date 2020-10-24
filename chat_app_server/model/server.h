@@ -7,7 +7,7 @@
 #include <pthread.h>
 #include <vector>
 #include "user.h"
-#include "utility.h"
+#include "./utility/utility.h"
 #include "../DBOperations/DBOperations.h"
 
 #define PORT 9090
@@ -29,15 +29,15 @@ protected:
     static pthread_mutex_t mutex;
     static vector<ClientInfo> registeredClients;
 
+    static void registerUser(string, string, int);
+    static void loginUser(string, string, ClientInfo &);
+    static void displayRegisteredUsers(ClientInfo);
+    static bool getConnectedUserLoginStatus(string);
+    static string loadMessages(string, string);
     static void sendMessage(string, string, int);
     static void *receiveMessage(void *sock);
-    static void loginUser(string, string, ClientInfo &);
-    static void registerUser(string, string, int);
-    static bool getConnectedUserLoginStatus(string);
     static void logout(ClientInfo);
-    static void displayRegisteredUsers(ClientInfo);
-    static string loadMessages(string, string);
-
+    
     void handleSession(int);
 
 public:

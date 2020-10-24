@@ -2,7 +2,7 @@
 
 bool DBOperations::validateUser(string userId, string password)
 {
-    mongocxx::collection collection = conn["DemoUserDB"]["user"];
+    mongocxx::collection collection = conn[db]["user"];
     mongocxx::cursor cursor = collection.find({});
     bsoncxx::document::element id, pass;
 
@@ -21,7 +21,7 @@ bool DBOperations::validateUser(string userId, string password)
 
 void DBOperations::registerUser(string userId, string password)
 {
-    mongocxx::collection collection = conn["DemoUserDB"]["user"];
+    mongocxx::collection collection = conn[db]["user"];
 
     auto builder = bsoncxx::builder::stream::document{};
 
@@ -36,7 +36,7 @@ void DBOperations::registerUser(string userId, string password)
 
 bool DBOperations::checkUserExists(string userId)
 {
-    mongocxx::collection collection = conn["DemoUserDB"]["user"];
+    mongocxx::collection collection = conn[db]["user"];
     mongocxx::cursor cursor = collection.find({});
 
     for (auto &&data : cursor)
@@ -52,7 +52,7 @@ bool DBOperations::checkUserExists(string userId)
 
 void DBOperations::updateOnlineStatus(ClientInfo client)
 {
-    mongocxx::collection collection = conn["DemoUserDB"]["user"];
+    mongocxx::collection collection = conn[db]["user"];
 
     collection.update_one(
         make_document(kvp("user_id", client.userId)),
@@ -65,7 +65,7 @@ vector<ClientInfo> DBOperations::getRegisteredClientsList()
 {
     vector<ClientInfo> registeredClientsList;
 
-    mongocxx::collection collection = conn["DemoUserDB"]["user"];
+    mongocxx::collection collection = conn[db]["user"];
 
     mongocxx::cursor result = collection.find({});
 
@@ -85,7 +85,7 @@ vector<ClientInfo> DBOperations::getRegisteredClientsList()
 void DBOperations::storeClientMessages(string sender, string receiver, string message)
 {
     string collectionName = util.getCollectionName(sender, receiver);
-    mongocxx::collection collection = conn["DemoUserDB"][collectionName];
+    mongocxx::collection collection = conn[db][collectionName];
 
     auto time = chrono::system_clock::to_time_t(chrono::system_clock::now());
 
@@ -105,7 +105,7 @@ vector<pair<string, string>> DBOperations::getClientMessages(string sender, stri
     vector<pair<string, string>> messages;
     bsoncxx::document::element msg;
     string collectionName = util.getCollectionName(sender, receiver);
-    mongocxx::collection collection = conn["DemoUserDB"][collectionName];
+    mongocxx::collection collection = conn[db][collectionName];
 
     mongocxx::cursor result = collection.find({});
 

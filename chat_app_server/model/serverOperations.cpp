@@ -1,20 +1,5 @@
 #include "server.h"
 
-bool Server::getConnectedUserLoginStatus(string userId)
-{
-	registeredClients = dbOperator.getRegisteredClientsList();
-	bool status;
-
-	for (ClientInfo client : registeredClients)
-	{
-		if (client.userId == userId)
-		{
-			status = client.loginStatus;
-		}
-	}
-	return status;
-}
-
 void Server::registerUser(string userId, string password, int socket)
 {
 	string sendMsg;
@@ -69,19 +54,19 @@ void Server::loginUser(string userId, string password, ClientInfo &cl)
 	displayRegisteredUsers(cl);
 }
 
-void Server::logout(ClientInfo cl)
+bool Server::getConnectedUserLoginStatus(string userId)
 {
-	for (int i = 0; i < registeredClients.size(); i++)
+	registeredClients = dbOperator.getRegisteredClientsList();
+	bool status;
+
+	for (ClientInfo client : registeredClients)
 	{
-		if (registeredClients[i].userId == cl.userId)
+		if (client.userId == userId)
 		{
-			cout << registeredClients[i].userId << " disconnected" << endl;
-			cl.loginStatus = false;
-			cl.mySocket = 1;
-			dbOperator.updateOnlineStatus(cl);
-			registeredClients = dbOperator.getRegisteredClientsList();
+			status = client.loginStatus;
 		}
 	}
+	return status;
 }
 
 void Server::displayRegisteredUsers(ClientInfo cl)
@@ -108,6 +93,21 @@ void Server::displayRegisteredUsers(ClientInfo cl)
 		}
 	}
 
-	onlineClients += "\n\x1B[33mSelect userId to chat with:  \033[0m";
+	onlineClients += "\x1B[33mEnter userId to chat with:  \033[0m\n";
 	send(cl.mySocket, onlineClients.c_str(), onlineClients.size(), 0);
+}
+
+void Server::logout(ClientInfo cl)
+{
+	for (int i = 0; i < registeredClients.size(); i++)
+	{
+		if (registeredClients[i].userId == cl.userId)
+		{
+			cout << registeredClients[i].userId << " disconnected" << endl;
+			cl.loginStatus = false;
+			cl.mySocket = 1;
+			dbOperator.updateOnlineStatus(cl);
+			registeredClients = dbOperator.getRegisteredClientsList();
+		}
+	}
 }

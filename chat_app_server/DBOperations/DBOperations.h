@@ -7,7 +7,7 @@
 #include <mongocxx/instance.hpp>
 #include <vector>
 #include "../model/user.h"
-#include "../model/utility.h"
+#include "../model/utility/utility.h"
 
 using namespace std;
 
@@ -27,6 +27,8 @@ class DBOperations
     bsoncxx::builder::basic::document basicDocument{};
 
     Utility util;
+
+    string db = "ChatApplication";
 
 public:
     void registerUser(string, string);
